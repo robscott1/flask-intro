@@ -43,14 +43,26 @@ def hello_world():
 @app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def get_users():
 	if request.method == 'GET':
+		print(request.args)
 		search_username = request.args.get('name')
-		if search_username :
+		search_job = request.args.get('job')
+
+		if search_username and search_job :
+			subdict = {'users_list' : []}
+			for user in users['users_list']:
+				if user['name'] == search_username and user['job'] == search_job:
+					subdict['users_list'].append(user)
+			return subdict
+
+		elif search_username :
 			subdict = {'users_list' : []}
 			for user in users['users_list']:
 				if user['name'] == search_username:
 					subdict['users_list'].append(user)
 			return subdict
-		return users
+
+		else:
+			return users
 	elif request.method == 'POST':
 		userToAdd = request.get_json()
 		users['users_list'].append(userToAdd)
