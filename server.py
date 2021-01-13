@@ -40,21 +40,31 @@ users = {
 def hello_world():
 	return 'Hello, world!'
 
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def get_users():
-   if request.method == 'GET':
-      search_username = request.args.get('name')
-      if search_username :
-         subdict = {'users_list' : []}
-         for user in users['users_list']:
-            if user['name'] == search_username:
-               subdict['users_list'].append(user)
-         return subdict
-      return users
-   elif request.method == 'POST':
-      userToAdd = request.get_json()
-      users['users_list'].append(userToAdd)
-      resp = jsonify(success=True)
-      #resp.status_code = 200 #optionally, you can always set a response code. 
-      # 200 is the default code for a normal response
-      return resp
+	if request.method == 'GET':
+		search_username = request.args.get('name')
+		if search_username :
+			subdict = {'users_list' : []}
+			for user in users['users_list']:
+				if user['name'] == search_username:
+					subdict['users_list'].append(user)
+			return subdict
+		return users
+	elif request.method == 'POST':
+		userToAdd = request.get_json()
+		users['users_list'].append(userToAdd)
+		resp = jsonify(success=True)
+		return resp
+	elif request.method == 'DELETE':
+		userToDelete = request.get_json()
+		deleted = False
+		lst = users['users_list']
+		for user in lst:
+			if user['id'] == userToDelete['id']:
+				lst.remove(user)
+				deleted = True
+		resp = jsonify(success=True, deleted=deleted)
+		return resp
+   
+			
